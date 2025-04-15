@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clly</title>
+  <link rel="stylesheet" href="/Web html/web.css">
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="/Web html/cart.css">
+  
+  <link rel="stylesheet" href="/Web html/product.css">
+  <style>
+    #container-table {
+  width: 100%;
+  background-color: transparent;
+  overflow-x: auto;
+}
+
+#cart-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+#cartoption {
+  
+  min-width: 700px; 
+  border-collapse: collapse;
+  width: 100%;
+  background-color: transparent;
+  transition: max-height 0.5s ease-in-out;
+  text-align: center;
+  display: none;
+}
+
+th, td {
+  border: 1px solid #AB52FF;
+  padding: 10px;
+  text-align: center;
+}
+
+
+th {
+  background-color: #6E81E5;
+  color: white;
+}
+
+
+/* Quantity Button Styling */ 
+      
+      .incQty, .decQty { padding: 4px 10px; margin: 0 5px; border: none; border-radius: 4px; background-color: #4CAF50; color: white; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; }
+
+/* Quantity Number Styling */ 
+
+      .qtyValue { font-size: 16px; margin: 0 8px; display: inline-block; min-width: 20px; text-align: center;
+}
+
+
+.removeBtn{
+  border: none;
+  background-color: red;
+  font-size: 1rem;
+  padding: 4px;
+  color: #FFFFFF;
+ }
+ 
+
+
+    #cartbtn {
+      background: #00bcd4;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 20%;
+      font-size: 16px;
+      margin-top: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #cartbtn:hover {
+      background: #00acc1;
+    }
+
+
+
+
+.custom-alert {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.custom-alert {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);  /* dark background */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* इसे बहुत high रखें */
+}
+
+.custom-alert {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.alert-content {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+  animation: slideUp 0.4s ease-in-out;
+}
+
+.btnConfirm, .btnCancel {
+  padding: 8px 18px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btnConfirm {
+  background-color: #28a745;
+  color: white;
+}
+
+.btnCancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 
+
+
+
+#closeAlertBtn{
+  height: auto;
+  width: 3rem;
+  background-color: green;
+  padding: 6px;
+  font-weight: 700;
+  color: white;
+}
+  </style>
+  <style>
+    /* Product Box - center and responsive layout */
+#productbox {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#productContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 10px;
+}
+
+/* Individual Product Card */
+.product {
+  background: #fff;
+  border: 1px solid #FFFFFF;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+
+}
+
+.product h3 {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+.product p {
+  margin: 4px 0;
+}
+
+/* Cart Button */
+.cartButton {
+  background: #FF7400;
+  border: 2px solid #8C0F0F;
+  border-radius: 1.5rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cartButton:hover {
+  background: #FF4600;
+}
+
+/* Expand Mode */
+.product.expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: none;
+  border-radius: 0%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+.product.expanded img {
+  height: auto;
+  width: 96%;
+  object-fit: cover;
+ margin: 8px;
+}
+
+.product.expanded .product-details {
+  height: 40vh;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: red;
+  color: white;
+  font-size: 24px;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+
+
+
+.buy-btn {
+  background-color:#02BD23;
+  border: 2px solid #04340D;
+  border-radius: 1.5rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease
+}
+
+.buy-btn:hover {
+  background: #01410D;
+}
+  </style>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  background-color: #E7ECEF;
+  font-family: sans-serif;
+}
+
+
+  #navleft{
+    display: flex;
+    height: 4em;
+    width: 100%;
+    background-color: #1F1F21;
+    color: #FFFFFF;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  
+  .n{
+    height: 3em;
+    width: 15%;
+    color: #FFFFFF;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+  }
+  
+    #navright{
+    width: 100%;
+    height: 4em;
+    background-color: #1F1F21;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 0px;
+    top: 0px;
+  }
+  
+
+  
+  #navright input {
+    width: 90%;
+    height: 3em;
+    background-color: #1F1F21;
+    border: 2px solid #DD7E40;
+    margin: 2%;
+    border-radius: 0.6em;
+  }
+  
+
+#mode i{
+  transform: rotate(180deg)
+}
+
+
+
+/* Slider styles */
+.slider-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid black;
+  border-left: none;
+  border-right: none;
+  margin-top: 0.5em;
+}
+
+.slider {
+  display: flex;
+  transition: transform 1s ease-in-out;
+}
+
+.slider img {
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 2rem;
+  padding: 4px;
+}
+
+/* Category slect */
+
+
+#categorybox{
+  width: 100%;
+  height: 3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+  margin-top: 6px;
+  padding: 0px;
+}
+
+#categoryB{
+  width: 90%;
+  height: 3em;
+  background-color: #FF6E00;
+  color: #FFFFFF;
+  border: 2px solid #96521A;
+  border-radius: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 0px;
+}
+
+
+#category {
+  display: none;
+  background-color: transparent;
+  padding: 10px;
+  font-size: 1.5rem;
+  box-sizing: content-box;
+  color: #FFFFFF;
+  padding: 2rem;
+  position: relative;
+  margin-top: 4px;
+  padding-top: 0px;
+  transition: max-height 0.5s ease-in-out;
+
+}
+
+
+#category div{
+  text-align: center;
+  padding: 5px;
+  border-radius: 0.5em;
+  background-color: transparent;
+  border: 2px solid #E96740;
+  box-shadow: 2px 2px 6px #000000;
+  
+  }
+  
+#category ul {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+  
+  #category div ul li{
+    list-style: none;
+    background-color: #FF6E00;
+    margin: 2px;
+    border-radius: 1.5rem;
+    padding: 4px;
+  }
+  
+      /* menu options */
+    
+      #menuoption{
+        display: none;
+        width: 100%;
+        background-color: #000000;
+        transition: max-height 0.5s ease-in-out;
+      }
+      
+      #menuoption div{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+      }
+      
+    #menuoption div ul li{
+    list-style: none;
+    background-color: #3D3535;
+    color: #FFFFFF;
+    margin: 2px;
+    border-radius: 1.5rem;
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+      }
+      
+
+li{
+    cursor: pointer;
+}
+      
+.imgstyle{
+  grid-row: 1/2;
+  grid-column: 1/2;
+}
+
+.detailstyle{
+  grid-row: 2/3;
+  grid-column: 1/2;
+  border:1px solid black;
+  background-color: #E7ECEF;
+}
+
+.n{
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+      #menuoption div ul li a{
+        text-decoration: none;
+        color: #FFFFFF;
+      }
+  </style>
+  <style>
+    .n {
+  background-color: black;
+  cursor: pointer;
+  cursor: pointer;
+}
+
+.n.active {
+  border: 2px solid white;
+  border-bottom: none;
+  background-color: #1F1F21;
+}
+  </style>
+  
+</head>
+
+<body>
+
+  <!--Navleft propertys-->
+
+  <div id="navleft">
+    <div id="menu" class="n"><i class="fa-solid fa-bars"></i></div>
+    <div id="home" class="n">
+      <i class="fa-solid fa-house"></i></div>
+    <div id="cart" class="n"><i class="fa-solid fa-cart-arrow-down"></i></div>
+    <div id="mode" class="n modechange"><i class="fa-solid fa-hourglass-start"></i></div>
+    <div id="order" class="n">
+      <i class="fa-solid fa-box"></i></div>
+    <a href="/Web html/acount.html" id="acount" class="n">
+      <i class="fa-solid fa-user"></i></a>
+  </div>
+
+  <!--cart Options-->
+
+<div id="container-table">
+<table id="cartoption">
+  <thead>
+    <tr>
+      <th>Remove</th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Total Price</th>
+    </tr>
+  </thead>
+  <tbody id="cart-body">
+   
+  </tbody>
+</table>
+</div>
+
+
+<!--Menuoptions Propertys-->
+
+  <div id="menuoption">
+    <div>
+      <ul>
+        <li class="modechange">Mode</li>
+        <li><a href="/Web html/acount.html">Edit Profile</a></li>
+        <li><a href="/Web html/acount.html"></a>Acount</li>
+      </ul>
+    </div>
+  </div>
+
+<!--Navright Propertys-->
+
+  <div id="navright">
+<input type="text" id="searchInput" placeholder="  Search Hear...">
+  </div>
+
+<!--Benner Sliding Propertys-->
+
+  <div class="slider-container">
+    <div class="slider" id="slider">
+      <img src="https://ik.imagekit.io/Prajapati/Benner1.jpg?updatedAt=1744544703953" alt="benner-1">
+      <img src="/web photos/top benner.jpg" alt="benner-2">
+      <img src="/web photos/top benner.jpg" alt="benner-3">
+    </div>
+  </div>
+
+<!--Category button propertys-->
+
+  <div id="categorybox"><button id="categoryB">Category</button></div>
+  <div id="category">
+    <div>
+      <ul>
+        <li>Cosmetics</li>
+        <li>Journal</li>
+        <li>Medical</li>
+        <li>Electronic</li>
+        <li>Sneakers</li>
+        <li>Dry fruits</li>
+        <li>Western wears</li>
+        <li>Mans wears</li>
+        <li>Furniture</li>
+        <li>Home use appliances</li>
+        <li>Toys</li>
+      </ul>
+    </div>
+  </div>
+
+<!--Add Products Propertys-->
+
+<div id="productbox">
+  <div id="productContainer"></div>
+</div>
+
+<!--Add JavaScript Fails-->
+<script>
+  // default red for home
+document.getElementById("home").classList.add("active");
+
+// सब बटन सेलेक्ट करो
+const buttons = document.querySelectorAll(".n");
+
+// सभी बटनों पर क्लिक इवेंट लगाओ
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    // पहले सभी से 'active' क्लास हटाओ
+    buttons.forEach(btn => btn.classList.remove("active"));
+
+    // क्लिक किए गए बटन पर 'active' क्लास लगाओ
+    button.classList.add("active");
+  });
+});
+</script>
+
+<script>
+  let cart = document.querySelector("#cart");
+let cartoption = document.querySelector("#cartoption");
+
+cart.addEventListener("click", () => {
+  let computedStyle = window.getComputedStyle(cartoption);
+  cartoption.style.display = computedStyle.display === "none" ? "table" : "none";
+});
+
+let cartTable = document.querySelector("#cartoption");
+let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+// Total Row
+let totalRow = document.createElement("tr");
+totalRow.innerHTML = `
+  <td colspan="5" style="text-align:right;"><strong>Total:</strong></td>
+  <td><strong>₹<span id="totalAmount">0</span></strong></td>
+`;
+cartTable.appendChild(totalRow);
+
+// Buy Button Row
+let buyRow = document.createElement("tr");
+buyRow.innerHTML = `
+  <td colspan="6" style="text-align:right;">
+    <button id="cartbtn" style="padding: 10px 20px; background-color: green; color: white; border: none; cursor: pointer;">
+      Buy
+    </button>
+  </td>
+`;
+cartTable.appendChild(buyRow);
+
+document.addEventListener("click", function(e) {
+  if (e.target.id === "cartbtn") {
+    window.location.href = "/Web html/Buy.html";
+  }
+});
+
+// Total Update
+function updateTotal() {
+  let total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.getElementById("totalAmount").textContent = total;
+}
+
+// Save to local storage
+function saveCartToLocal() {
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+}
+
+// Save to Firebase
+function saveCartToFirebase() {
+  firebase.database().ref("cartItems").set(cartItems)
+    .then(() => console.log("Cart data saved to Firebase"))
+    .catch(error => console.error("Firebase save error:", error));
+}
+
+// Render cart
+function renderCartItems() {
+  cartItems.forEach(product => {
+    let row = document.createElement("tr");
+    row.classList.add("cartRow");
+    row.innerHTML = `
+      <td><button class="removeBtn">X</button></td>
+      <td>${product.name}</td>
+      <td><img src="${product.image}" alt="product" width="50"></td>
+      <td>
+        <button class="decQty">-</button>
+        <span class="qtyValue">${product.quantity}</span>
+        <button class="incQty">+</button>
+      </td>
+      <td>₹<span class="unitPrice">${product.price}</span></td>
+      <td>₹<span class="priceValue">${product.price * product.quantity}</span></td>
+    `;
+    cartTable.insertBefore(row, totalRow);
+  });
+  updateTotal();
+}
+renderCartItems();
+
+// Add to cart event
+document.addEventListener("add-to-cart", function(e) {
+  let product = e.detail;
+
+  let exists = cartItems.find(item => item.name === product.name);
+  if (exists) {
+    showCustomAlert("Product is already added in your cart");
+    return;
+  }
+
+  cartItems.push({ ...product });
+  saveCartToLocal();
+  saveCartToFirebase(); // Firebase Save
+
+  let row = document.createElement("tr");
+  row.classList.add("cartRow");
+  row.innerHTML = `
+    <td><button class="removeBtn">X</button></td>
+    <td>${product.name}</td>
+    <td><img src="${product.image}" alt="product" width="50"></td>
+    <td>
+      <button class="decQty">-</button>
+      <span class="qtyValue">${product.quantity}</span>
+      <button class="incQty">+</button>
+    </td>
+    <td>₹<span class="unitPrice">${product.price}</span></td>
+    <td>₹<span class="priceValue">${product.price * product.quantity}</span></td>
+  `;
+  cartTable.insertBefore(row, totalRow);
+  updateTotal();
+});
+
+// Remove
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("removeBtn")) {
+    let row = e.target.closest("tr");
+    let name = row.children[1].innerText;
+
+    showConfirmRemove("Remove product from your cart?", () => {
+      cartItems = cartItems.filter(item => item.name !== name);
+      saveCartToLocal();
+      saveCartToFirebase(); // Firebase Update
+      row.remove();
+      updateTotal();
+    });
+  }
+});
+
+// Quantity control
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("incQty") || e.target.classList.contains("decQty")) {
+    let row = e.target.closest("tr");
+    let qtyElem = row.querySelector(".qtyValue");
+    let unitPrice = parseInt(row.querySelector(".unitPrice").textContent);
+    let priceElem = row.querySelector(".priceValue");
+    let name = row.children[1].innerText;
+    let product = cartItems.find(item => item.name === name);
+    if (!product) return;
+
+    if (e.target.classList.contains("incQty")) {
+      product.quantity++;
+    } else if (e.target.classList.contains("decQty") && product.quantity > 1) {
+      product.quantity--;
+    }
+
+    qtyElem.textContent = product.quantity;
+    priceElem.textContent = product.price * product.quantity;
+    saveCartToLocal();
+    saveCartToFirebase(); // Firebase Update
+    updateTotal();
+  }
+});
+
+// Confirm Remove Box
+function showConfirmRemove(message, onConfirm) {
+  const existing = document.querySelector('.custom-alert');
+  if (existing) existing.remove();
+
+  let alertModal = document.createElement('div');
+  alertModal.classList.add('custom-alert');
+  alertModal.innerHTML = `
+    <div class="alert-content">
+      <span id="alertMessage">${message}</span>
+      <div style="margin-top: 15px;">
+        <button id="confirmRemove" class="btnConfirm">Yes</button>
+        <button id="cancelRemove" class="btnCancel">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(alertModal);
+  alertModal.style.display = "flex";
+
+  document.getElementById("confirmRemove").addEventListener("click", function () {
+    alertModal.remove();
+    onConfirm();
+  });
+
+  document.getElementById("cancelRemove").addEventListener("click", function () {
+    alertModal.remove();
+  });
+}
+
+// Alert box
+function showCustomAlert(message) {
+  let alertModal = document.createElement('div');
+  alertModal.classList.add('custom-alert');
+  alertModal.innerHTML = `
+    <div class="alert-content">
+      <span id="alertMessage">${message}</span>
+      <button id="closeAlertBtn">OK</button>
+    </div>
+  `;
+  document.body.appendChild(alertModal);
+  alertModal.style.display = "flex";
+
+  document.getElementById("closeAlertBtn").addEventListener("click", function() {
+    alertModal.remove();
+  });
+}
+</script>
+  <script>
+    // Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCq8sky8d8SowD7FwJiqOAftDZZ5WC4sRc",
+  authDomain: "user-detail-f9d15.firebaseapp.com",
+  databaseURL: "https://user-detail-f9d15-default-rtdb.firebaseio.com",
+  projectId: "user-detail-f9d15",
+  storageBucket: "user-detail-f9d15.appspot.com",
+  messagingSenderId: "1008052101145",
+  appId: "1:1008052101145:web:b36468a26edbc1e5abca88"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Load data from Firebase or localStorage
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = JSON.parse(localStorage.getItem("userData"));
+  if (saved) fillForm(saved);
+
+  const storedId = localStorage.getItem("uniqueId");
+  if (storedId) {
+    get(child(ref(database), `accounts/${storedId}`)).then(snapshot => {
+      if (snapshot.exists()) {
+        fillForm(snapshot.val());
+        localStorage.setItem("userData", JSON.stringify(snapshot.val()));
+      }
+    });
+  }
+
+  document.querySelector("button").addEventListener("click", saveData);
+});
+
+// Fill form function
+function fillForm(data) {
+  document.getElementById("username").value = data.name || "";
+  document.getElementById("email").value = data.email || "";
+  document.getElementById("date").value = data.date || "";
+  document.getElementById("country").value = data.country || "";
+  document.getElementById("state").value = data.state || "";
+  document.getElementById("city").value = data.city || "";
+  document.getElementById("number").value = data.number || "";
+  document.getElementById("message").value = data.message || "";
+}
+
+// Save data function
+function saveData() {
+  const data = {
+    name: document.getElementById("username").value,
+    email: document.getElementById("email").value,
+    date: document.getElementById("date").value,
+    country: document.getElementById("country").value,
+    state: document.getElementById("state").value,
+    city: document.getElementById("city").value,
+    number: document.getElementById("number").value,
+    message: document.getElementById("message").value
+  };
+
+  if (data.name && data.email && data.date && data.country && data.state && data.city && data.number) {
+    const uniqueId = (data.email + "_" + data.number).replace(/[^\w]/g, "_");
+    set(ref(database, "accounts/" + uniqueId), data)
+      .then(() => {
+        localStorage.setItem("userData", JSON.stringify(data));
+        localStorage.setItem("uniqueId", uniqueId);
+        alert("Data saved to Firebase and localStorage!");
+      })
+      .catch(err => {
+        alert("Error saving to Firebase: " + err);
+      });
+  } else {
+    alert("Please fill all required fields.");
+  }
+}
+
+
+
+
+
+
+
+  </script>
+  <script>
+      
+  //Light and Dark Mode:-
+let modechangeElements = document.querySelectorAll(".modechange");
+let body = document.querySelector("body");
+let product = document.querySelectorAll(".product"); 
+let isDark = false;
+
+modechangeElements.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (isDark) {
+      body.style.backgroundColor = "white";
+      body.style.color = "#1B1C1D";
+
+      // सभी product का background और color बदलो
+      product.forEach((p) => {
+        p.style.backgroundColor = "white";
+        p.style.color = "#1B1C1D";
+      });
+
+    } else {
+      body.style.backgroundColor = "#1B1C1D";
+      body.style.color = "white";
+
+      product.forEach((p) => {
+        p.style.backgroundColor = "#1B1C1D";
+        p.style.color = "white";
+      });
+    }
+
+    isDark = !isDark;
+  });
+});
+
+
+
+  //Benner Sliding :-
+  const slider = document.getElementById("slider");
+  const slides = slider.querySelectorAll("img");
+  const totalSlides = slides.length;
+  let currentIndex = 0;
+
+  function moveSlide() {
+    currentIndex++;
+    if (currentIndex >= totalSlides) {
+      currentIndex = 0;
+    }
+
+    slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  setInterval(moveSlide, 3000); // हर 3 सेकंड में स्लाइड बदलेगा
+
+//Category slect button :-
+let categoryB=document.querySelector("#categoryB");
+let list=document.querySelector("#category");
+
+categoryB.addEventListener("click", () => {
+  let computedStyle = window.getComputedStyle(list);
+  if (computedStyle.display === "none") {
+    list.style.display = "block";
+    isSettingVisible = true;
+  } else {
+    list.style.display = "none";
+    
+    
+  }
+  
+  
+});
+
+// menu property :-
+
+let menu=document.querySelector("#menu");
+
+let menuoption=document.querySelector("#menuoption");
+
+menu.addEventListener("click", () => {
+  let computedStyle = window.getComputedStyle(menuoption);
+  if (computedStyle.display === "none") {
+    menuoption.style.display = "block";
+    isSettingVisible = true;
+  } else {
+    menuoption.style.display = "none";
+    
+    menuoption.classList.toggle("open");
+    
+  }
+});
+
+
+
+
+//category option;
+
+document.querySelectorAll("#category ul li").forEach(item => {
+  item.addEventListener("click", function () {
+    const selectedCategory = this.textContent.trim().toLowerCase();
+    displayProductsByCategory(selectedCategory);
+  });
+});
+
+
+
+
+
+
+function normalize(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]/gi, "");
+}
+
+function isFuzzyMatch(product, query) {
+  const fields = [
+    product.name,
+    product.category,
+    product.price.toString(),
+    product.rating.toString(),
+    product.reviews.toString()
+  ];
+
+  return fields.some(field => normalize(field).includes(normalize(query)));
+}
+
+document.getElementById("searchInput").addEventListener("input", function () {
+  let query = this.value.trim();
+
+  if (query === "") {
+    productContainer.innerHTML = ""; // खाली input पर products नहीं दिखाएंगे
+    return;
+  }
+
+  let filteredProducts = products.filter(product => isFuzzyMatch(product, query));
+
+  productContainer.innerHTML = "";
+
+  if (filteredProducts.length === 0) {
+    productContainer.innerHTML = "<p>No products found.</p>";
+  } else {
+    filteredProducts.forEach((product, index) => {
+      let div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <img src="${product.image}" alt="Product Image">
+        <h3>${product.name}</h3>
+        <p>Rating: ${"★".repeat(product.rating)}${"☆".repeat(5 - product.rating)}</p>
+        <p>Reviews: ${product.reviews}</p>
+        <p>Price: ₹${product.price}</p>
+        <p>Quantity: ${product.quantity}</p>
+        <button class="cartButton" data-index="${index}">Add to Cart</button>
+      `;
+      productContainer.appendChild(div);
+    });
+  }
+});
+
+
+//Home button:-
+
+
+document.getElementById("home").addEventListener("click", 
+function() {
+  location.reload();
+});
+
+
+
+
+
+  </script>
+<script>
+  let productContainer = document.getElementById("productContainer");
+
+let products = [
+  {
+    iD: 1,
+    name: "lipstick",
+    image: "/web photos/top benner.jpg",
+    rating: 3,
+    reviews: 52,
+    price: 120,
+    quantity: 0,
+    category: "cosmetics"
+  },
+  {
+    iD: 2,
+    name: "Apple Shake",
+    image: "/web photos/top benner.jpg",
+    rating: 5,
+    reviews: 88,
+    price: 150,
+    quantity: 1,
+    category: "medical"
+  },
+  {
+    iD: 3,
+    name: "Banana Smoothie",
+    image: "/web photos/top benner.jpg",
+    rating: 3,
+    reviews: 35,
+    price: 99,
+    quantity: 1,
+    category: "journal"
+  },
+  {
+    iD: 4,
+    name: "Banana sweet",
+    image: "/web photos/top benner.jpg",
+    rating: 3,
+    reviews: 35,
+    price: 199,
+    quantity: 1,
+    category: "journal"
+  }, 
+  {
+  iD: 5,
+  name: "bet",
+  image: "/web photos/top benner.jpg",
+  rating: 3,
+  reviews: 35,
+  price: 159,
+  quantity: 1,
+  category: "toys"
+  }
+];
+
+// Clear container first
+productContainer.innerHTML = "";
+
+products.forEach(function(product, index) {
+  let div = document.createElement("div");
+  div.className = "product";
+  div.innerHTML = `
+    <img src="${product.image}" alt="Product Image">
+    <div class="product-details">
+      <h3>${product.name}</h3>
+      <p>Rating: ${"★".repeat(product.rating)}${"☆".repeat(5 - product.rating)}</p>
+      <p>Reviews: ${product.reviews}</p>
+      <p>iD: ${product.iD}</p>
+      <p>Price: ₹${product.price}</p>
+      <p>Quantity: ${product.quantity}</p>
+      <button class="cartButton" data-index="${index}">Add to Cart</button>
+    </div>
+  `;
+
+  // Add to Cart button
+  div.querySelector(".cartButton").addEventListener("click", function (e) {
+    e.stopPropagation(); // div को expand होने से रोकने के लिए
+    let selectedProduct = products[index];
+    document.dispatchEvent(new CustomEvent("add-to-cart", { detail: selectedProduct }));
+  });
+
+  // Fullscreen expand on click
+  div.addEventListener("click", function () {
+    document.querySelectorAll(".product.expanded").forEach(el => {
+      el.classList.remove("expanded");
+      let close = el.querySelector(".close-btn");
+      if (close) close.remove();
+
+      let oldBuyBtn = el.querySelector(".buy-btn");
+      if (oldBuyBtn) oldBuyBtn.remove();
+    });
+
+    div.classList.add("expanded");
+
+    // Close button
+    let closeBtn = document.createElement("button");
+    closeBtn.className = "close-btn";
+    closeBtn.innerText = "×";
+    closeBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      div.classList.remove("expanded");
+      closeBtn.remove();
+
+      let buyBtn = div.querySelector(".buy-btn");
+      if (buyBtn) buyBtn.remove();
+    });
+    div.appendChild(closeBtn);
+
+    // Buy Now button
+    let buyBtn = document.createElement("button");
+    buyBtn.className = "buy-btn cartButton";
+    buyBtn.innerText = "Buy Now";
+
+    buyBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      window.location.href = "/Web html/Buy.html"; // Navigate to the Buy page
+    });
+
+    let cartBtn = div.querySelector(".cartButton");
+    cartBtn.insertAdjacentElement("afterend", buyBtn);
+  });
+
+  productContainer.appendChild(div);
+});
+
+
+
+
+
+function displayProductsByCategory(category) {
+  let filteredProducts = products.filter(product => 
+    product.category.toLowerCase() === category.toLowerCase()
+  );
+
+  productContainer.innerHTML = "";
+
+  if (filteredProducts.length === 0) {
+    productContainer.innerHTML = "<p>No products found in this category.</p>";
+    return;
+  }
+
+  filteredProducts.forEach((product, index) => {
+    let div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
+      <img src="${product.image}" alt="Product Image">
+      <div class="product-details">
+        <h3>${product.name}</h3>
+        <p>Rating: ${"★".repeat(product.rating)}${"☆".repeat(5 - product.rating)}</p>
+        <p>Reviews: ${product.reviews}</p>
+        <p>iD: ${product.iD}</p>
+        <p>Price: ₹${product.price}</p>
+        <p>Quantity: ${product.quantity}</p>
+        <button class="cartButton" data-index="${index}">Add to Cart</button>
+      </div>
+    `;
+
+    div.querySelector(".cartButton").addEventListener("click", function (e) {
+      e.stopPropagation();
+      let selectedProduct = filteredProducts[index];
+      document.dispatchEvent(new CustomEvent("add-to-cart", { detail: selectedProduct }));
+    });
+
+    div.addEventListener("click", function () {
+      document.querySelectorAll(".product.expanded").forEach(el => {
+        el.classList.remove("expanded");
+        let close = el.querySelector(".close-btn");
+        if (close) close.remove();
+        let oldBuyBtn = el.querySelector(".buy-btn");
+        if (oldBuyBtn) oldBuyBtn.remove();
+      });
+
+      div.classList.add("expanded");
+
+      let closeBtn = document.createElement("button");
+      closeBtn.className = "close-btn";
+      closeBtn.innerText = "×";
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        div.classList.remove("expanded");
+        closeBtn.remove();
+        let buyBtn = div.querySelector(".buy-btn");
+        if (buyBtn) buyBtn.remove();
+      });
+      div.appendChild(closeBtn);
+
+      let buyBtn = document.createElement("button");
+      buyBtn.className = "buy-btn cartButton";
+      buyBtn.innerText = "Buy Now";
+      buyBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        window.location.href = "/Web html/Buy.html";
+      });
+
+      let cartBtn = div.querySelector(".cartButton");
+      cartBtn.insertAdjacentElement("afterend", buyBtn);
+    });
+
+    productContainer.appendChild(div);
+  });
+}
+
+document.querySelectorAll("#category ul li").forEach(item => {
+  item.addEventListener("click", function () {
+    const selectedCategory = this.textContent.trim();
+    displayProductsByCategory(selectedCategory);
+  });
+});
+
+
+</script>
+</body>
+ 
+  </html>
